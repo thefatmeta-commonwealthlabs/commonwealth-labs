@@ -3,148 +3,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Commonwealth Labs | Financial Simulator</title>
-    <!-- Tailwind CSS for styling -->
+    <title>Commonwealth Labs | Financial Simulation Game</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Clean, Apple-inspired base styling -->
     <style>
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-            background-color: #f5f5f7; 
-            color: #1d1d1f; 
+            background-color: #0b0f17; 
+            color: #f1f5f9; 
         }
-        .glass-panel { 
-            background: rgba(255, 255, 255, 0.7); 
-            backdrop-filter: blur(20px); 
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 16px; 
-            border: 1px solid rgba(255, 255, 255, 0.5); 
+        .retro-card { 
+            background: #111827; 
+            border: 1px solid #1f2937; 
+            border-radius: 12px; 
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center p-6">
-    
-    <!-- Top Navigation & Balance -->
-    <header class="w-full max-w-4xl flex justify-between items-center py-6 mb-8">
-        <h1 class="text-2xl font-semibold tracking-tight">Commonwealth Labs</h1>
-        <div class="text-sm font-medium bg-black text-white px-4 py-2 rounded-full shadow-md">
-            Balance: $<span id="account-balance">500.00</span>
+<body class="min-h-screen flex flex-col items-center p-4 md:p-8">
+
+    <!-- Legal Disclaimer Bar -->
+    <div class="w-full max-w-4xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs py-2 px-4 rounded-lg mb-6 flex justify-between items-center">
+        <span>⚠️ <strong>SIMULATED GAME DESK:</strong> Paper money only. Zero real-world financial execution.</span>
+        <span class="font-mono uppercase bg-amber-500/20 px-2 py-0.5 rounded text-[10px]">Sandbox Mode</span>
+    </div>
+
+    <!-- Header & RPG Stats -->
+    <header class="w-full max-w-4xl flex flex-wrap justify-between items-center gap-4 pb-6 border-b border-gray-800 mb-6">
+        <div>
+            <h1 class="text-2xl font-bold tracking-tight text-white">Commonwealth Labs</h1>
+            <p class="text-xs text-gray-400">Market Dynamics & Risk RPG Simulator</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <div class="text-right">
+                <div class="text-xs text-gray-400">Player Rank</div>
+                <div id="player-level" class="text-sm font-semibold text-emerald-400">Lvl 1: Novice Trader</div>
+            </div>
+            <div class="bg-gray-800 border border-gray-700 px-4 py-2 rounded-xl text-right">
+                <div class="text-[10px] uppercase text-gray-400 font-mono">Paper Balance</div>
+                <div class="text-lg font-bold text-white">$<span id="account-balance">500.00</span></div>
+            </div>
         </div>
     </header>
 
+    <!-- Main Grid -->
     <main class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6">
         
-        <!-- Market Overview Panel -->
-        <section class="glass-panel p-6 shadow-sm">
-            <h2 class="text-xl font-medium mb-4">Market Overview</h2>
-            <div id="market-feed" class="space-y-4">
-                <p class="text-gray-500 text-sm">Market is live. Initializing data...</p>
-                <!-- JavaScript will inject stock prices here -->
+        <!-- Market Feed -->
+        <section class="retro-card p-5">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-base font-semibold text-gray-200">Simulated Exchange</h2>
+                <span class="text-xs font-mono text-emerald-400 animate-pulse">● Live Engine</span>
+            </div>
+            <div id="market-feed" class="space-y-3">
+                <!-- Live Asset Tickers -->
             </div>
         </section>
 
-        <!-- Trading Desk Panel -->
-        <section class="glass-panel p-6 shadow-sm">
-            <h2 class="text-xl font-medium mb-4">Trading Desk</h2>
-            <div class="flex flex-col space-y-4">
-                <select id="asset-select" class="p-3 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="SPY">S&P 500 ETF (SPY)</option>
-                    <option value="BTC">Bitcoin (BTC)</option>
+        <!-- Trading Desk -->
+        <section class="retro-card p-5 flex flex-col justify-between">
+            <div>
+                <h2 class="text-base font-semibold text-gray-200 mb-4">Paper Order Entry</h2>
+                
+                <label class="block text-xs text-gray-400 mb-1">Select Asset</label>
+                <select id="asset-select" class="w-full p-2.5 mb-3 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm focus:outline-none focus:border-blue-500">
+                    <option value="SPY">SPY (S&P 500 Index ETF)</option>
+                    <option value="BTC">BTC (Bitcoin Paper Token)</option>
                 </select>
-                
-                <input type="number" id="trade-amount" placeholder="Amount in USD" class="p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                
-                <div class="flex space-x-4 pt-2">
-                    <button id="buy-btn" class="flex-1 bg-green-500 text-white font-medium py-3 rounded-lg hover:bg-green-600 transition shadow-sm">Buy</button>
-                    <button id="sell-btn" class="flex-1 bg-red-500 text-white font-medium py-3 rounded-lg hover:bg-red-600 transition shadow-sm">Sell</button>
+
+                <label class="block text-xs text-gray-400 mb-1">Trade Size (USD Paper Cash)</label>
+                <input type="number" id="trade-amount" placeholder="e.g. 100" class="w-full p-2.5 mb-4 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm focus:outline-none focus:border-blue-500">
+
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <button id="buy-btn" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-2.5 rounded-lg text-sm transition">Buy Asset</button>
+                    <button id="sell-btn" class="bg-rose-600 hover:bg-rose-500 text-white font-medium py-2.5 rounded-lg text-sm transition">Sell Asset</button>
                 </div>
             </div>
+
+            <!-- Reset -->
+            <div class="pt-4 border-t border-gray-800 flex justify-between items-center">
+                <span class="text-xs text-gray-500">Restart $500 Trial:</span>
+                <button id="reset-btn" class="text-xs text-gray-400 hover:text-white underline">Reset Portfolio</button>
+            </div>
         </section>
-        
+
+        <!-- Portfolio Summary -->
+        <section class="retro-card p-5 md:col-span-2">
+            <h2 class="text-base font-semibold text-gray-200 mb-3">Portfolio Holdings</h2>
+            <div id="portfolio-display" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Portfolio Metrics -->
+            </div>
+        </section>
+
     </main>
 
-    <!-- JavaScript Logic Tag -->
+    <footer class="w-full max-w-4xl text-center text-gray-600 text-xs py-6 mt-6 border-t border-gray-900">
+        Commonwealth Labs &copy; 2026. Interactive Financial Literacy Engine. All rights reserved.
+    </footer>
+
     <script>
-// Initial State
-let balance = 500.00;
-let holdings = { SPY: 0, BTC: 0 };
-let prices = { SPY: 580.00, BTC: 65000.00 };
+        let balance = 500.00;
+        let holdings = { SPY: 0, BTC: 0 };
+        let prices = { SPY: 579.50, BTC: 64920.00 };
 
-// Grab HTML Elements
-const balanceEl = document.getElementById('account-balance');
-const marketFeedEl = document.getElementById('market-feed');
-const assetSelect = document.getElementById('asset-select');
-const tradeAmountInput = document.getElementById('trade-amount');
-const buyBtn = document.getElementById('buy-btn');
-const sellBtn = document.getElementById('sell-btn');
+        const balanceEl = document.getElementById('account-balance');
+        const levelEl = document.getElementById('player-level');
+        const marketFeedEl = document.getElementById('market-feed');
+        const portfolioDisplay = document.getElementById('portfolio-display');
+        const assetSelect = document.getElementById('asset-select');
+        const tradeAmountInput = document.getElementById('trade-amount');
+        const buyBtn = document.getElementById('buy-btn');
+        const sellBtn = document.getElementById('sell-btn');
+        const resetBtn = document.getElementById('reset-btn');
 
-// Update Screen
-function updateUI() {
-    balanceEl.innerText = balance.toFixed(2);
-    marketFeedEl.innerHTML = `
-        <div class="flex justify-between border-b pb-2">
-            <span class="font-medium">SPY (S&P 500)</span>
-            <span class="${prices.SPY > 580 ? 'text-green-500' : 'text-red-500'} font-medium">$${prices.SPY.toFixed(2)}</span>
-        </div>
-        <div class="flex justify-between border-b pb-2 pt-2">
-            <span class="font-medium">BTC (Bitcoin)</span>
-            <span class="${prices.BTC > 65000 ? 'text-green-500' : 'text-red-500'} font-medium">$${prices.BTC.toFixed(2)}</span>
-        </div>
-        <div class="mt-4 pt-2">
-            <h3 class="text-sm font-semibold text-gray-600 mb-2">Your Portfolio</h3>
-            <div class="text-sm flex justify-between"><span>SPY Shares:</span> <span>${holdings.SPY.toFixed(4)} ($${(holdings.SPY * prices.SPY).toFixed(2)})</span></div>
-            <div class="text-sm flex justify-between"><span>BTC Coins:</span> <span>${holdings.BTC.toFixed(6)} ($${(holdings.BTC * prices.BTC).toFixed(2)})</span></div>
-        </div>
-    `;
-}
+        function updateUI() {
+            balanceEl.innerText = balance.toFixed(2);
+            const netWorth = balance + (holdings.SPY * prices.SPY) + (holdings.BTC * prices.BTC);
 
-// Simulate Live Market (Updates every 3 seconds)
-setInterval(() => {
-    prices.SPY = prices.SPY * (1 + (Math.random() - 0.5) * 0.002); 
-    prices.BTC = prices.BTC * (1 + (Math.random() - 0.5) * 0.008); 
-    updateUI();
-}, 3000);
+            if (netWorth >= 1000) {
+                levelEl.innerText = "Lvl 3: Syndicate Partner";
+                levelEl.className = "text-sm font-semibold text-purple-400";
+            } else if (netWorth >= 650) {
+                levelEl.innerText = "Lvl 2: Floor Specialist";
+                levelEl.className = "text-sm font-semibold text-blue-400";
+            } else {
+                levelEl.innerText = "Lvl 1: Novice Trader";
+                levelEl.className = "text-sm font-semibold text-emerald-400";
+            }
 
-// Trade Execution Logic
-function executeTrade(type) {
-    const asset = assetSelect.value;
-    const amountUSD = parseFloat(tradeAmountInput.value);
+            marketFeedEl.innerHTML = `
+                <div class="flex justify-between items-center p-3 rounded-lg bg-gray-800/50 border border-gray-700/50">
+                    <div>
+                        <div class="font-medium text-sm text-white">SPY</div>
+                        <div class="text-[11px] text-gray-400">Equity Index</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-mono text-sm font-semibold ${prices.SPY >= 579.50 ? 'text-emerald-400' : 'text-rose-400'}">$${prices.SPY.toFixed(2)}</div>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center p-3 rounded-lg bg-gray-800/50 border border-gray-700/50">
+                    <div>
+                        <div class="font-medium text-sm text-white">BTC</div>
+                        <div class="text-[11px] text-gray-400">Digital Paper Token</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-mono text-sm font-semibold ${prices.BTC >= 64920.00 ? 'text-emerald-400' : 'text-rose-400'}">$${prices.BTC.toFixed(2)}</div>
+                    </div>
+                </div>
+            `;
 
-    if (isNaN(amountUSD) || amountUSD <= 0) {
-        alert("Please enter a valid dollar amount.");
-        return;
-    }
-
-    const price = prices[asset];
-    const quantity = amountUSD / price;
-
-    if (type === 'BUY') {
-        if (balance >= amountUSD) {
-            balance -= amountUSD;
-            holdings[asset] += quantity;
-            tradeAmountInput.value = '';
-            updateUI();
-        } else {
-            alert("Insufficient funds! You only have $" + balance.toFixed(2));
+            portfolioDisplay.innerHTML = `
+                <div class="p-3 bg-gray-800/40 rounded-lg border border-gray-800">
+                    <div class="text-xs text-gray-400">SPY Holdings</div>
+                    <div class="text-lg font-mono font-semibold text-white mt-1">${holdings.SPY.toFixed(4)} <span class="text-xs text-gray-400 font-normal">($${(holdings.SPY * prices.SPY).toFixed(2)})</span></div>
+                </div>
+                <div class="p-3 bg-gray-800/40 rounded-lg border border-gray-800">
+                    <div class="text-xs text-gray-400">BTC Holdings</div>
+                    <div class="text-lg font-mono font-semibold text-white mt-1">${holdings.BTC.toFixed(6)} <span class="text-xs text-gray-400 font-normal">($${(holdings.BTC * prices.BTC).toFixed(2)})</span></div>
+                </div>
+            `;
         }
-    } else if (type === 'SELL') {
-        if ((holdings[asset] * price) >= (amountUSD - 0.05)) { // 5 cent buffer for rounding
-            holdings[asset] -= quantity;
-            balance += amountUSD;
-            tradeAmountInput.value = '';
+
+        setInterval(() => {
+            prices.SPY = Math.max(1, prices.SPY * (1 + (Math.random() - 0.495) * 0.003));
+            prices.BTC = Math.max(1, prices.BTC * (1 + (Math.random() - 0.495) * 0.009));
             updateUI();
-        } else {
-            alert("You don't own enough of this asset to sell that much.");
+        }, 2500);
+
+        function executeTrade(type) {
+            const asset = assetSelect.value;
+            const amountUSD = parseFloat(tradeAmountInput.value);
+
+            if (isNaN(amountUSD) || amountUSD <= 0) {
+                alert("Enter a valid paper dollar amount.");
+                return;
+            }
+
+            const currentPrice = prices[asset];
+            const quantity = amountUSD / currentPrice;
+
+            if (type === 'BUY') {
+                if (balance >= amountUSD) {
+                    balance -= amountUSD;
+                    holdings[asset] += quantity;
+                    tradeAmountInput.value = '';
+                    updateUI();
+                } else {
+                    alert("Insufficient game funds.");
+                }
+            } else if (type === 'SELL') {
+                if ((holdings[asset] * currentPrice) >= (amountUSD - 0.05)) {
+                    holdings[asset] -= quantity;
+                    balance += amountUSD;
+                    tradeAmountInput.value = '';
+                    updateUI();
+                } else {
+                    alert("You do not hold enough units to sell that amount.");
+                }
+            }
         }
-    }
-}
 
-// Button Click Listeners
-buyBtn.addEventListener('click', () => executeTrade('BUY'));
-sellBtn.addEventListener('click', () => executeTrade('SELL'));
+        buyBtn.addEventListener('click', () => executeTrade('BUY'));
+        sellBtn.addEventListener('click', () => executeTrade('SELL'));
 
-// Start App
-updateUI();
+        resetBtn.addEventListener('click', () => {
+            if (confirm("Reset paper portfolio back to $500?")) {
+                balance = 500.00;
+                holdings = { SPY: 0, BTC: 0 };
+                updateUI();
+            }
+        });
+
+        updateUI();
     </script>
 </body>
 </html>
