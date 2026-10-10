@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commonwealth Labs | Financial Simulator</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Clean, Apple-inspired base styling -->
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background-color: #f5f5f7; 
+            color: #1d1d1f; 
+        }
+        .glass-panel { 
+            background: rgba(255, 255, 255, 0.7); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 16px; 
+            border: 1px solid rgba(255, 255, 255, 0.5); 
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center p-6">
+    
+    <!-- Top Navigation & Balance -->
+    <header class="w-full max-w-4xl flex justify-between items-center py-6 mb-8">
+        <h1 class="text-2xl font-semibold tracking-tight">Commonwealth Labs</h1>
+        <div class="text-sm font-medium bg-black text-white px-4 py-2 rounded-full shadow-md">
+            Balance: $<span id="account-balance">500.00</span>
+        </div>
+    </header>
+
+    <main class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Market Overview Panel -->
+        <section class="glass-panel p-6 shadow-sm">
+            <h2 class="text-xl font-medium mb-4">Market Overview</h2>
+            <div id="market-feed" class="space-y-4">
+                <p class="text-gray-500 text-sm">Market is live. Initializing data...</p>
+                <!-- JavaScript will inject stock prices here -->
+            </div>
+        </section>
+
+        <!-- Trading Desk Panel -->
+        <section class="glass-panel p-6 shadow-sm">
+            <h2 class="text-xl font-medium mb-4">Trading Desk</h2>
+            <div class="flex flex-col space-y-4">
+                <select id="asset-select" class="p-3 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="SPY">S&P 500 ETF (SPY)</option>
+                    <option value="BTC">Bitcoin (BTC)</option>
+                </select>
+                
+                <input type="number" id="trade-amount" placeholder="Amount in USD" class="p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                
+                <div class="flex space-x-4 pt-2">
+                    <button id="buy-btn" class="flex-1 bg-green-500 text-white font-medium py-3 rounded-lg hover:bg-green-600 transition shadow-sm">Buy</button>
+                    <button id="sell-btn" class="flex-1 bg-red-500 text-white font-medium py-3 rounded-lg hover:bg-red-600 transition shadow-sm">Sell</button>
+                </div>
+            </div>
+        </section>
+        
+    </main>
+
+    <!-- JavaScript Logic Tag -->
+    <script>
+// Initial State
+let balance = 500.00;
+let holdings = { SPY: 0, BTC: 0 };
+let prices = { SPY: 580.00, BTC: 65000.00 };
+
+// Grab HTML Elements
+const balanceEl = document.getElementById('account-balance');
+const marketFeedEl = document.getElementById('market-feed');
+const assetSelect = document.getElementById('asset-select');
+const tradeAmountInput = document.getElementById('trade-amount');
+const buyBtn = document.getElementById('buy-btn');
+const sellBtn = document.getElementById('sell-btn');
+
+// Update Screen
+function updateUI() {
+    balanceEl.innerText = balance.toFixed(2);
+    marketFeedEl.innerHTML = `
+        <div class="flex justify-between border-b pb-2">
+            <span class="font-medium">SPY (S&P 500)</span>
+            <span class="${prices.SPY > 580 ? 'text-green-500' : 'text-red-500'} font-medium">$${prices.SPY.toFixed(2)}</span>
+        </div>
+        <div class="flex justify-between border-b pb-2 pt-2">
+            <span class="font-medium">BTC (Bitcoin)</span>
+            <span class="${prices.BTC > 65000 ? 'text-green-500' : 'text-red-500'} font-medium">$${prices.BTC.toFixed(2)}</span>
+        </div>
+        <div class="mt-4 pt-2">
+            <h3 class="text-sm font-semibold text-gray-600 mb-2">Your Portfolio</h3>
+            <div class="text-sm flex justify-between"><span>SPY Shares:</span> <span>${holdings.SPY.toFixed(4)} ($${(holdings.SPY * prices.SPY).toFixed(2)})</span></div>
+            <div class="text-sm flex justify-between"><span>BTC Coins:</span> <span>${holdings.BTC.toFixed(6)} ($${(holdings.BTC * prices.BTC).toFixed(2)})</span></div>
+        </div>
+    `;
+}
+
+// Simulate Live Market (Updates every 3 seconds)
+setInterval(() => {
+    prices.SPY = prices.SPY * (1 + (Math.random() - 0.5) * 0.002); 
+    prices.BTC = prices.BTC * (1 + (Math.random() - 0.5) * 0.008); 
+    updateUI();
+}, 3000);
+
+// Trade Execution Logic
+function executeTrade(type) {
+    const asset = assetSelect.value;
+    const amountUSD = parseFloat(tradeAmountInput.value);
+
+    if (isNaN(amountUSD) || amountUSD <= 0) {
+        alert("Please enter a valid dollar amount.");
+        return;
+    }
+
+    const price = prices[asset];
+    const quantity = amountUSD / price;
+
+    if (type === 'BUY') {
+        if (balance >= amountUSD) {
+            balance -= amountUSD;
+            holdings[asset] += quantity;
+            tradeAmountInput.value = '';
+            updateUI();
+        } else {
+            alert("Insufficient funds! You only have $" + balance.toFixed(2));
+        }
+    } else if (type === 'SELL') {
+        if ((holdings[asset] * price) >= (amountUSD - 0.05)) { // 5 cent buffer for rounding
+            holdings[asset] -= quantity;
+            balance += amountUSD;
+            tradeAmountInput.value = '';
+            updateUI();
+        } else {
+            alert("You don't own enough of this asset to sell that much.");
+        }
+    }
+}
+
+// Button Click Listeners
+buyBtn.addEventListener('click', () => executeTrade('BUY'));
+sellBtn.addEventListener('click', () => executeTrade('SELL'));
+
+// Start App
+updateUI();
+    </script>
+</body>
+</html>
